@@ -1,38 +1,37 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { ProjectContext } from "../context/ProjectContext";
 import { Link } from "react-router-dom";
-import { Button, TextField, List, ListItem, ListItemText, Container, Typography } from "@mui/material";
+import { Button, TextField, List, ListItem, ListItemText, Container, Typography, LinearProgress } from "@mui/material";
 
 function Dashboard() {
-  const [processes, setProcesses] = useState([
-    { id: 1, name: "Process A", status: "In Progress" },
-    { id: 2, name: "Process B", status: "Completed" }
-  ]);
+  const { projects, addProject } = useContext(ProjectContext);
+  const [newProject, setNewProject] = useState("");
 
-  const [newProcess, setNewProcess] = useState("");
-
-  const addProcess = () => {
-    if (newProcess.trim()) {
-      setProcesses([...processes, { id: processes.length + 1, name: newProcess, status: "Pending" }]);
-      setNewProcess("");
+  const handleAddProject = () => {
+    if (newProject.trim()) {
+      addProject(newProject);
+      setNewProject("");
     }
   };
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>Process Tracker</Typography>
+      <Typography variant="h4" gutterBottom>Company Process Tracker</Typography>
 
       <TextField
-        label="Enter process name"
+        label="New Project Name"
         variant="outlined"
-        value={newProcess}
-        onChange={(e) => setNewProcess(e.target.value)}
+        value={newProject}
+        onChange={(e) => setNewProject(e.target.value)}
+        style={{ marginRight: 10 }}
       />
-      <Button variant="contained" color="primary" onClick={addProcess} style={{ marginLeft: 10 }}>Add</Button>
+      <Button variant="contained" color="primary" onClick={handleAddProject}>Add Project</Button>
 
       <List>
-        {processes.map((process) => (
-          <ListItem key={process.id} button component={Link} to={`/process/${process.id}`}>
-            <ListItemText primary={`${process.name} - ${process.status}`} />
+        {projects.map((project) => (
+          <ListItem key={project.id} button component={Link} to={`/project/${project.id}`}>
+            <ListItemText primary={project.name} secondary={`Status: ${project.status}`} />
+            <LinearProgress variant="determinate" value={project.progress} style={{ width: "40%" }} />
           </ListItem>
         ))}
       </List>
